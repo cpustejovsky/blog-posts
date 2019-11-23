@@ -1,5 +1,5 @@
-**Title**: Solidity and Smart Contracts
-**CONTEXT:** *I'm giving a little talk on Solidity and smart contracts and I suck at PowerPoint so I decided to create a blog post that others can follow along with. That way I can also add in edits as my coworkers correct or expand on what I put in.*
+**Comment or [make a PR](https://github.com/cpustejovsky/blog-posts/blob/master/soldity.md) if you have any suggestions, criticism, or other feedback**
+
 
 # Smart Contracts
 
@@ -39,46 +39,70 @@ You generally run a program by double-clicking it or putting `./` in front of it
 
 ![Diagram of EVM](https://hackernoon.com/hn-images/1*ajksoo8DEQl-COk84HdVvA.png)
 
-
-
 # Solidity
+
+You **could** build smart contracts in JavaScript or C++ or Python or something, but because there are specific constraints and contexts related to the EVM, it's easier to build a language specifically for the task.
+
+Currently, Solidity is the most popular language for programming smart contracts. It is an imperative programming language like C++ or Java because as Andreas/Gavin points out, **"Programmers, like most humans, resist change!"**
+
+It uses **semantic versioning**
+![](https://digitalcommunications.wp.st-andrews.ac.uk/files/2017/01/semver03.png)
+
+## Example Code
+
+![](https://miro.medium.com/max/4788/1*VpOAbpxTQa-otqtZr38Uhw.jpeg)
+
+I'm new to Solidity, so I used CryptoZombies to learn the basics. This is what I created from Lesson 1:
+
 ```solidity
+//sets the version of solidity that this smart contract will work with
 pragma solidity ^0.4.25;
 
+
+//fundamental building block of ETH applications
 contract ZombieFactory {
 
-    // declare our event here
+    // event declaration
+    event NewZombie(uint zombieId, string name, uint dna);
 
+    //uint: unsigned integers (means you know they are positive)
     uint dnaDigits = 16;
     uint dnaModulus = 10 ** dnaDigits;
 
+
+    //like an object in JavaScript, allows for more complex storage of key-value pairs
     struct Zombie {
         string name;
         uint dna;
     }
-
+    //public array that adds Zombie structs
     Zombie[] public zombies;
 
+    //private function; only set functions public if you want to expose them to the world
     function _createZombie(string _name, uint _dna) private {
         zombies.push(Zombie(_name, _dna));
-        // and fire it here
+        uint id = zombies.push(Zombie(_name, _dna)) - 1;
+        emit NewZombie(id, _name, _dna);
     } 
 
     function _generateRandomDna(string _str) private view returns (uint) {
         uint rand = uint(keccak256(abi.encodePacked(_str)));
         return rand % dnaModulus;
     }
-
+    //public: means any person or contract can call this function and execute it's code
     function createRandomZombie(string _name) public {
         uint randDna = _generateRandomDna(_name);
         _createZombie(_name, randDna);
     }
 
 }
-
 ```
+[Found here](https://ethfiddle.com/7624u67iEd)
+
+
 # Resources
 * [CryptoZombies](https://cryptozombies.io/)
 * [Solidity Documentation](https://solidity.readthedocs.io/en/v0.5.13/)
-* [VSCode Setup]()
-* [JetBrains Setup]()
+* [EthFiddle](https://ethfiddle.com/)
+* [VSCode Setup](https://marketplace.visualstudio.com/items?itemName=JuanBlanco.solidity)
+* [JetBrains Setup](https://plugins.jetbrains.com/plugin/9475-intellij-solidity/versions)
