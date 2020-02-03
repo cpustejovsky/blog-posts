@@ -1,5 +1,9 @@
-const createBlogPost = require('./createBlogPost');
+const getBlogPosts = require('./getBlogPosts');
+const updateBlogPosts = require('./updateBlogPosts');
 
-//refactor getBlogPosts to create markdown files if none are present with that slug
+const getAndUpdateBlogPosts = async () => {
+  await getBlogPosts();
+  await updateBlogPosts();
+}
 
-//have updateBlogPosts run after getBlogPosts
+getAndUpdateBlogPosts();

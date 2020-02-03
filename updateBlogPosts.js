@@ -5,7 +5,7 @@ const util = require("util");
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 
-const updateBlogPost = async (id, fileName) => {
+const updateBlogPost = async (postData) => {
   try {
     let config = {
       headers: {
@@ -15,12 +15,15 @@ const updateBlogPost = async (id, fileName) => {
     let data = {
       article: {
         published: true,
-        body_markdown: await readFile(`posts/${fileName}.md`, "utf-8")
+        body_markdown: await readFile(`posts/${postData.slug}.md`, "utf-8")
       }
     };
-    let update = await axios.put(`https://dev.to/api/articles/${id}`, data, config)
-    console.log(update)
-    console.log(`successfully updated ${fileName}`)
+    if(data.article.body_markdown === postData.body){
+      console.log(`${postData.slug} Does not need updating`)
+    } else {
+      let update = await axios.put(`https://dev.to/api/articles/${postData.id}`, data, config)
+      console.log(`successfully updated ${postData.slug}`)
+    }
   } catch (e) {
     console.log(e);
     console.log("\n ERROR! \n");
@@ -38,12 +41,12 @@ const getBlogPostData = async () => {
       return {
         id: el.id,
         slug: post.data.slug,
-        // body: post.data.body_markdown
+        body: post.data.body_markdown
       };
     });
     const postData = await Promise.all(postPromises)
-    postData.forEach(el=>{
-      updateBlogPost(el.id, el.slug)
+    postData.forEach(data=>{
+      updateBlogPost(data)
     })
 
   } catch (e) {
