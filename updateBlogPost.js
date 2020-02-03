@@ -5,7 +5,30 @@ const util = require("util");
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 
-const updateBlogPost = async () => {
+const updateBlogPost = async (id, fileName) => {
+  try {
+    let config = {
+      headers: {
+        "api-key": process.env.API_KEY
+      }
+    };
+    let data = {
+      article: {
+        published: true,
+        body_markdown: await readFile(`posts/${fileName}.md`, "utf-8")
+      }
+    };
+    let update = await axios.put(`https://dev.to/api/articles/${id}`, data, config)
+    console.log(update)
+    console.log(`successfully updated ${fileName}`)
+  } catch (e) {
+    console.log(e);
+    console.log("\n ERROR! \n");
+  }
+}
+
+
+const getBlogPostData = async () => {
   try {
     let response = await axios.get(
       "https://dev.to/api/articles?username=cpustejovsky"
@@ -19,7 +42,9 @@ const updateBlogPost = async () => {
       };
     });
     const postData = await Promise.all(postPromises)
-    console.log(postData)
+    postData.forEach(el=>{
+      updateBlogPost(el.id, el.slug)
+    })
 
   } catch (e) {
     console.log(e);
@@ -27,4 +52,7 @@ const updateBlogPost = async () => {
   }
 };
 
-updateBlogPost();
+getBlogPostData();
+
+
+// updateBlogPost("209781", "solidity-and-smart-contracts-23a7")
