@@ -13,11 +13,9 @@ const createBlogPost = async (fileName) => {
     };
     let data = {
       article: {
-        title: "Test Post",
+        title: "Post to Update",
         published: true,
-        body_markdown: await readFile(`posts/${fileName}.md`, "utf-8"),
-        tags: ["discuss", "help"],
-        series: "Test"
+        body_markdown: await readFile(`posts/${fileName}.md`, "utf-8")
       }
     };
     const response = await axios.post("https://dev.to/api/articles", data, config)

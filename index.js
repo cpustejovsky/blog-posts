@@ -1,4 +1,4 @@
 const createBlogPost = require('./createBlogPost');
 
 console.clear()
-createBlogPost("test");
+createBlogPost("update-test");
